@@ -1,0 +1,39 @@
+server:
+  port: 8080
+
+
+spring:
+  application:
+    name: gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          # spring.cloud.gateway.discovery.locator.enabled：是否与服务注册于发现组件进行结合，通过 serviceId（也就是spring.application.name) 转发到具体的服务实例。默认为false，设为true便开启通过服务中心的自动根据 serviceId (spring.application.name) 创建路由的功能。
+          # 规则为假设有一个spring.application.name=myapp 的微服务。自动生成的路由等于gateway url+<大写的application_name> 例如 http://localhost:8080/MYAPP ,这个URL 会被转发到myapp 这个微服务。
+          # 如果想用小写路由需要手工定义routers，形态如下
+      routes:
+        - id: myapp #id 随意
+          uri: lb:MYAPP #默认生成的路由
+          order: 0
+          predicates:
+            - Path=/myapp/**
+          # 这条路由的意思是凡是http://xx.xx.x.x.:8080/myapp/**的路由被送到名称为MYAPPD的服务中
+
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+
+logging:
+  level:
+    org.springframework.cloud.gateway: debug
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
